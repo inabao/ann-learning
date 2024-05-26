@@ -5,8 +5,8 @@
 #include "hnsw/hnswlib.h"
 
 int main() {
-    int data_num = 10000;
-    int data_dim = 128;
+    size_t data_num = 10000;
+    size_t data_dim = 128;
     auto data = new float[data_num * data_dim];
     auto ids = new int[data_num];
 
@@ -22,6 +22,7 @@ int main() {
     for (int i = 0; i < data_num; ++i) {
         hnsw.addPoint(data + i * data_dim, ids[i]);
     }
+    //s->get_dist_func() (data, data + data_dim, &data_dim);
 
     int correct = 0;
     for (int i = 0; i < data_num; ++i) {
