@@ -31,12 +31,16 @@ class Graph {
 public:
   Graph(std::shared_ptr<float[]> data, size_t dim, size_t num,
         size_t max_degree)
-      : data_(data), dim_(dim), num_(num), max_degree_(max_degree) {}
+      : data_(data), dim_(dim), num_(num), max_degree_(max_degree) {
+    rd = new std::random_device;
+    float_distr = new std::uniform_real_distribution<float>;
+    rng = new std::mt19937((*rd)());
+  }
 
   void BuildGraph() {
     init_graph();
     check_turn();
-    for (int i = 0; i < 10; ++i) {
+    for (int i = 0; i < 20; ++i) {
       iter();
       check_turn();
     }
@@ -91,14 +95,25 @@ private:
 
   void iter() {
     std::vector<std::vector<std::pair<float, uint32_t>>> new_edges_;
+    std::vector<std::vector<uint32_t>> neighbors;
     new_edges_.resize(num_);
+    neighbors.resize(num_);
     for (int i = 0; i < num_; ++i) {
-      auto neighbors = edges_[i]; // 考虑反向边
-      for (int j = 0; j < neighbors.size(); ++j) { // 采样部分点进行计算
-        for (int k = j + 1; k < neighbors.size(); ++k) { // 在无更新时依旧有较多的计算量
-          auto dist = getDistance(neighbors[j].second, neighbors[k].second);
-          new_edges_[neighbors[j].second].emplace_back(dist, neighbors[k].second);
-          new_edges_[neighbors[k].second].emplace_back(dist, neighbors[j].second);
+      auto &edges_i = edges_[i];
+      for (auto & j : edges_i) {
+        if ((*float_distr)(*rng) < 0.3) {
+          neighbors[i].push_back(j.second);
+          neighbors[j.second].push_back(i);
+        }
+      }
+    }
+    for (int i = 0; i < num_; ++i) {
+      // 考虑反向边
+      for (int j = 0; j < neighbors[i].size(); ++j) { // 采样部分点进行计算
+        for (int k = j + 1; k < neighbors[i].size(); ++k) { // 在无更新时依旧有较多的计算量
+          auto dist = getDistance(neighbors[i][j], neighbors[i][k]);
+          new_edges_[neighbors[i][j]].emplace_back(dist, neighbors[i][k]);
+          new_edges_[neighbors[i][k]].emplace_back(dist, neighbors[i][j]);
         }
       }
     }
@@ -123,6 +138,9 @@ private:
   size_t num_{0};
   size_t max_degree_{0};
   std::vector<std::vector<std::pair<float, uint32_t>>> edges_;
+  std::random_device *rd;
+  std::uniform_real_distribution<float> *float_distr;
+  std::mt19937 *rng;
 };
 
 } // namespace knngraph
