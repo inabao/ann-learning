@@ -42,7 +42,7 @@ public:
     }
   }
 
-  std::vector<std::vector<uint32_t>> GetGraph() {
+  std::vector<std::vector<uint32_t>> GetGraph() const {
     std::vector<std::vector<uint32_t>> graphs;
     for (const auto &item : edges_) {
       std::vector<uint32_t> edge;
@@ -77,7 +77,7 @@ private:
     }
   }
 
-  void check_turn() {
+  void check_turn() const {
     int edge_count = 0;
     float edge_avg_dist = 0;
     for (int i = 0; i < num_; ++i) {
@@ -93,9 +93,9 @@ private:
     std::vector<std::vector<std::pair<float, uint32_t>>> new_edges_;
     new_edges_.resize(num_);
     for (int i = 0; i < num_; ++i) {
-      auto neighbors = edges_[i];
-      for (int j = 0; j < neighbors.size(); ++j) {
-        for (int k = j + 1; k < neighbors.size(); ++k) {
+      auto neighbors = edges_[i]; // 考虑反向边
+      for (int j = 0; j < neighbors.size(); ++j) { // 采样部分点进行计算
+        for (int k = j + 1; k < neighbors.size(); ++k) { // 在无更新时依旧有较多的计算量
           auto dist = getDistance(neighbors[j].second, neighbors[k].second);
           new_edges_[neighbors[j].second].emplace_back(dist, neighbors[k].second);
           new_edges_[neighbors[k].second].emplace_back(dist, neighbors[j].second);

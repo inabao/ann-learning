@@ -34,7 +34,7 @@ int main() {
   std::random_device rd;
   std::uniform_real_distribution float_distr;
   std::mt19937 rng(rd());
-  int data_num = 10000;
+  int data_num = 1000;
   size_t data_dim = 64;
   int max_degree = 24;
   auto vectors = std::shared_ptr<float[]>(new float[data_num * data_dim]);
