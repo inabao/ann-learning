@@ -43,7 +43,12 @@ int main() {
   }
 
   knngraph::Graph g(vectors, data_dim, data_num, max_degree);
+
+  auto start = std::chrono::high_resolution_clock::now();
   g.BuildGraph();
+  auto end = std::chrono::high_resolution_clock::now();
+  std::chrono::duration<double> duration = end - start;
+  std::cout << "Function executed in: " << duration.count() << " seconds" << std::endl;
   int hit_edge_count = 0;
   auto graph = g.GetGraph();
   for (int i = 0; i < data_num; ++i) {
